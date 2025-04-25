@@ -1,0 +1,35 @@
+import javax.crypto.*;
+import javax.crypto.spec.DESedeKeySpec;
+import javax.crypto.SecretKeyFactory;
+import java.util.Scanner;
+import java.util.Base64;
+import java.security.spec.KeySpec;
+
+public class DES{
+    public static void main(String [] args) throws Exception{
+        Scanner scanner=new Scanner(System.in);
+        System.out.println("Enter a text to encypt");
+        String text=scanner.nextLine();
+        scanner.close();
+        
+        //get a 24 byte key
+        String key="ThisIsASecretEncryptionKey";
+        byte [] bytekey=key.substring(0,24).getBytes();
+        
+        //generate a secret key
+        SecretKeyFactory keyfactory=SecretKeyFactory.getInstance("DESede");
+        KeySpec keyspec = new DESedeKeySpec(bytekey);
+
+        SecretKey secretkey=keyfactory.generateSecret(keyspec);
+        
+        Cipher cipher=Cipher.getInstance("DESede");
+        cipher.init(Cipher.ENCRYPT_MODE,secretkey);
+        String encrypted = Base64.getEncoder().encodeToString(cipher.doFinal(text.getBytes()));
+        System.out.println("Encrypted: " + encrypted);
+
+        // Decryption
+        cipher.init(Cipher.DECRYPT_MODE, secretkey);
+        String decrypted = new String(cipher.doFinal(Base64.getDecoder().decode(encrypted)));
+        System.out.println("Decrypted: " + decrypted);
+    }
+}
